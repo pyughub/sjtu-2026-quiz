@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>2026 主题知识竞赛 · 刷题</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #102a32;
+      --ink-2: #1a3d48;
+      --mist: #d7e4e6;
+      --slip: #fffdf8;
+      --rule: #e4d9c8;
+      --brass: #b8893a;
+      --brass-dim: #8a6a32;
+      --seal: #c41e3a;
+      --pass: #1f6b4a;
+      --mute: #5b6d70;
+      --opt: #2a4148;
+      --shadow: 0 18px 50px rgba(8, 22, 26, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, #1e4a56 0%, transparent 55%),
+        radial-gradient(800px 500px at -10% 100%, #0b1f25 0%, transparent 50%),
+        var(--ink);
+      color: var(--mist);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(720px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    header.mast {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+
+    h1 {
+      font-family: "Noto Serif SC", serif;
+      font-size: clamp(1.6rem, 4vw, 2.05rem);
+      font-weight: 700;
+      color: #f4f7f6;
+      letter-spacing: 0.08em;
+    }
+
+    .sub {
+      color: var(--mist);
+      opacity: 0.78;
+      font-size: 0.92rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 20px;
+    }
+
+    .chip {
+      border: 1px solid rgba(184, 137, 58, 0.35);
+      background: transparent;
+      color: var(--mist);
+      font: 500 13px/1 "Noto Sans SC", sans-serif;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .chip:hover { border-color: var(--brass); color: #fff; }
+    .chip.active {
+      background: var(--brass);
+      border-color: var(--brass);
+      color: #1a1408;
+    }
+
+    .card {
+      position: relative;
+      background: var(--slip);
+      color: var(--ink);
+      border-radius: 4px 4px 6px 6px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      display: block;
+      height: 6px;
+      background: linear-gradient(90deg, var(--seal) 0 28%, var(--brass) 28% 36%, var(--ink-2) 36%);
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 16px 22px 0;
+      font-size: 12px;
+      color: var(--brass-dim);
+      letter-spacing: 0.12em;
+    }
+
+    .meta .ch {
+      font-family: "Noto Serif SC", serif;
+      font-size: 15px;
+      letter-spacing: 0.18em;
+      color: var(--seal);
+      font-weight: 700;
+    }
+
+    .qid {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      letter-spacing: 0;
+      color: var(--mute);
+    }
+
+    .stem {
+      padding: 14px 22px 8px;
+      font-size: 1.08rem;
+      font-weight: 500;
+      line-height: 1.7;
+    }
+
+    .opts { padding: 8px 14px 6px; display: grid; gap: 8px; }
+
+    .opt {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: start;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--rule);
+      background: #fffcf6;
+      color: var(--opt);
+      border-radius: 3px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font: 400 15px/1.55 "Noto Sans SC", "IBM Plex Sans", sans-serif;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+    }
+
+    .opt:hover:not(:disabled) {
+      border-color: var(--brass);
+      background: #fff8ea;
+    }
+
+    .opt:focus-visible {
+      outline: 2px solid var(--brass);
+      outline-offset: 2px;
+    }
+
+    .opt:disabled { cursor: default; }
+
+    .bubble {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-weight: 600;
+      font-size: 13px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .opt.picked { border-color: var(--ink); background: #f3eee3; }
+    .opt.correct {
+      border-color: var(--pass);
+      background: #e8f4ee;
+    }
+    .opt.correct .bubble {
+      background: var(--pass);
+      border-color: var(--pass);
+      color: #fff;
+    }
+    .opt.wrong {
+      border-color: var(--seal);
+      background: #fbeaec;
+    }
+    .opt.wrong .bubble {
+      background: var(--seal);
+      border-color: var(--seal);
+      color: #fff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px 18px;
+    }
+
+    button.btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: 600 15px/1 "Noto Sans SC", sans-serif;
+      padding: 12px 18px;
+      border-radius: 3px;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: #f4f7f6;
+      flex: 1;
+    }
+    .btn-primary:hover { background: #1a3d48; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--mute);
+      border: 1px solid var(--rule);
+    }
+    .btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+
+    .feedback {
+      display: none;
+      margin: 0 14px 16px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--brass);
+      background: #f6f1e6;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { border-color: var(--pass); background: #eef6f1; }
+    .feedback.bad { border-color: var(--seal); background: #f8eef0; }
+
+    .verdict {
+      font-family: "Noto Serif SC", serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+    }
+    .feedback.ok .verdict { color: var(--pass); }
+    .feedback.bad .verdict { color: var(--seal); }
+
+    .expl { color: #334448; font-size: 0.92rem; line-height: 1.65; }
+
+    .stamp {
+      pointer-events: none;
+      position: absolute;
+      right: 18px;
+      top: 52px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      border: 3px solid;
+      display: grid;
+      place-items: center;
+      font-family: "Noto Serif SC", serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
+      opacity: 0;
+      transform: rotate(-18deg) scale(1.45);
+    }
+    .stamp.ok { color: var(--pass); border-color: var(--pass); box-shadow: inset 0 0 0 4px rgba(31,107,74,.25); }
+    .stamp.bad { color: var(--seal); border-color: var(--seal); box-shadow: inset 0 0 0 4px rgba(196,30,58,.22); }
+    .stamp.show {
+      animation: thud 0.42s cubic-bezier(.15, 1.4, .3, 1) forwards;
+    }
+
+    @keyframes thud {
+      to { opacity: 0.92; transform: rotate(-14deg) scale(1); }
+    }
+
+    .score {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--mist);
+      opacity: 0.9;
+    }
+    .score b { color: var(--brass); font-weight: 600; }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(215, 228, 230, 0.55);
+    }
+
+    @media (max-width: 560px) {
+      .wrap { width: calc(100% - 20px); padding-top: 18px; }
+      .stem { font-size: 1rem; padding-left: 16px; padding-right: 16px; }
+      .meta, .opts, .actions { padding-left: 10px; padding-right: 10px; }
+      .stamp { width: 74px; height: 74px; font-size: 18px; right: 10px; top: 46px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stamp.show { animation: none; opacity: 0.92; transform: rotate(-14deg) scale(1); }
+      .opt, .chip, .btn-primary { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="mast">
+      <div class="eyebrow">Shanghai Jiao Tong University · 2026</div>
+      <h1>主题知识竞赛</h1>
+      <p class="sub">公开题库 · 单选题随机刷 · 当场判对错</p>
+    </header>
+
+    <div class="filters" id="filters"></div>
+
+    <article class="card" id="card">
+      <div class="meta">
+        <span class="ch" id="chapter"></span>
+        <span class="qid" id="qid"></span>
+      </div>
+      <div class="stem" id="stem"></div>
+      <div class="opts" id="opts"></div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="btnSkip" type="button">换一题</button>
+        <button class="btn btn-primary" id="btnMain" type="button">确认作答</button>
+      </div>
+      <div class="feedback" id="feedback">
+        <div class="verdict" id="verdict"></div>
+        <div class="expl" id="expl"></div>
+      </div>
+      <div class="stamp" id="stamp" aria-hidden="true"></div>
+    </article>
+
+    <div class="score">
+      <span>本次 <b id="statOk">0</b> 对 · <b id="statBad">0</b> 错 · 正确率 <b id="statRate">—</b></span>
+      <span>本轮剩余 <b id="statLeft">0</b></span>
+    </div>
+    <p class="hint">键盘：A–D 选选项，回车确认或下一题。</p>
+  </div>
+
+  <script src="./questions.js"></script>
+  <script>
+    const CHAPTER_LABEL = { '"四史"学习': "「四史」学习" };
+    const all = window.QUESTIONS;
+    const chapters = [...new Set(all.map((q) => q.chapter))];
+
+    const el = {
+      filters: document.getElementById("filters"),
+      chapter: document.getElementById("chapter"),
+      qid: document.getElementById("qid"),
+      stem: document.getElementById("stem"),
+      opts: document.getElementById("opts"),
+      feedback: document.getElementById("feedback"),
+      verdict: document.getElementById("verdict"),
+      expl: document.getElementById("expl"),
+      stamp: document.getElementById("stamp"),
+      btnMain: document.getElementById("btnMain"),
+      btnSkip: document.getElementById("btnSkip"),
+      statOk: document.getElementById("statOk"),
+      statBad: document.getElementById("statBad"),
+      statRate: document.getElementById("statRate"),
+      statLeft: document.getElementById("statLeft"),
+    };
+
+    const state = {
+      filter: "all",
+      bag: [],
+      current: null,
+      picked: null,
+      locked: false,
+      ok: 0,
+      bad: 0,
+    };
+
+    function pool() {
+      return state.filter === "all" ? all : all.filter((q) => q.chapter === state.filter);
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function refill(exceptId) {
+      const ids = pool().map((q) => q.id).filter((id) => id !== exceptId);
+      state.bag = shuffle(ids);
+      if (!state.bag.length && exceptId) state.bag = [exceptId];
+    }
+
+    function nextQuestion() {
+      if (!state.bag.length) refill();
+      const id = state.bag.pop();
+      state.current = all.find((q) => q.id === id);
+      state.picked = null;
+      state.locked = false;
+      renderQuestion();
+      updateScore();
+    }
+
+    function renderFilters() {
+      const items = [["all", "全部 " + all.length], ...chapters.map((c) => [c, (CHAPTER_LABEL[c] || c) + " " + all.filter((q) => q.chapter === c).length])];
+      el.filters.innerHTML = "";
+      for (const [value, label] of items) {
+        const b = document.createElement("button");
+        b.className = "chip" + (state.filter === value ? " active" : "");
+        b.type = "button";
+        b.textContent = label;
+        b.addEventListener("click", () => {
+          if (state.filter === value) return;
+          state.filter = value;
+          refill();
+          nextQuestion();
+          renderFilters();
+        });
+        el.filters.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const q = state.current;
+      el.chapter.textContent = CHAPTER_LABEL[q.chapter] || q.chapter;
+      el.qid.textContent = "No." + String(q.id).padStart(3, "0");
+      el.stem.textContent = q.stem;
+      el.opts.innerHTML = "";
+      el.feedback.className = "feedback";
+      el.stamp.className = "stamp";
+      el.stamp.textContent = "";
+      el.btnMain.textContent = "确认作答";
+      el.btnMain.disabled = true;
+      el.btnSkip.hidden = false;
+
+      for (const key of ["A", "B", "C", "D"]) {
+        const btn = document.createElement("button");
+        btn.className = "opt";
+        btn.type = "button";
+        btn.dataset.key = key;
+        btn.innerHTML = '<span class="bubble">' + key + "</span><span></span>";
+        btn.lastChild.textContent = q.options[key];
+        btn.addEventListener("click", () => pick(key));
+        el.opts.appendChild(btn);
+      }
+    }
+
+    function pick(key) {
+      if (state.locked) return;
+      state.picked = key;
+      for (const btn of el.opts.querySelectorAll(".opt")) {
+        btn.classList.toggle("picked", btn.dataset.key === key);
+      }
+      el.btnMain.disabled = false;
+    }
+
+    function judge() {
+      if (state.locked || !state.picked) return;
+      state.locked = true;
+      const q = state.current;
+      const ok = state.picked === q.answer;
+      if (ok) state.ok += 1;
+      else state.bad += 1;
+
+      for (const btn of el.opts.querySelectorAll(".opt")) {
+        btn.disabled = true;
+        const k = btn.dataset.key;
+        if (k === q.answer) btn.classList.add("correct");
+        if (k === state.picked && !ok) btn.classList.add("wrong");
+      }
+
+      el.feedback.className = "feedback show " + (ok ? "ok" : "bad");
+      el.verdict.textContent = ok ? "回答正确" : "回答错误  ·  正确答案 " + q.answer;
+      el.expl.textContent = q.explanation || "";
+      el.expl.style.display = q.explanation ? "block" : "none";
+
+      el.stamp.textContent = ok ? "正确" : "错";
+      el.stamp.className = "stamp show " + (ok ? "ok" : "bad");
+
+      el.btnMain.textContent = "下一题";
+      el.btnMain.disabled = false;
+      el.btnSkip.hidden = true;
+      updateScore();
+    }
+
+    function onMain() {
+      if (!state.locked) judge();
+      else nextQuestion();
+    }
+
+    function skip() {
+      if (state.locked) return;
+      nextQuestion();
+    }
+
+    function updateScore() {
+      const n = state.ok + state.bad;
+      el.statOk.textContent = state.ok;
+      el.statBad.textContent = state.bad;
+      el.statRate.textContent = n ? Math.round((state.ok / n) * 100) + "%" : "—";
+      el.statLeft.textContent = state.bag.length;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key.toUpperCase();
+      if ("ABCD".includes(k) || "1234".includes(e.key)) {
+        const map = { 1: "A", 2: "B", 3: "C", 4: "D" };
+        pick(map[e.key] || k);
+        e.preventDefault();
+      } else if (e.key === "Enter") {
+        onMain();
+        e.preventDefault();
+      }
+    });
+
+    el.btnMain.addEventListener("click", onMain);
+    el.btnSkip.addEventListener("click", skip);
+
+    renderFilters();
+    refill();
+    nextQuestion();
+  </script>
+</body>
+</html>
