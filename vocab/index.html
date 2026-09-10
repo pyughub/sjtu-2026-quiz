@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#E7ECF2" />
+  <title>交大水平考试 · 带标词汇</title>
+  <style>
+    :root {
+      --paper: #e7ecf2;
+      --ink: #151b28;
+      --card: #f9fafc;
+      --line: #c9d2de;
+      --star: #8e1d2a;
+      --tri: #163a66;
+      --ok: #1e5c43;
+      --mute: #5a6576;
+      --gutter: 18px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 47px,
+          rgba(22, 58, 102, 0.035) 47px,
+          rgba(22, 58, 102, 0.035) 48px
+        ),
+        var(--paper);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .page {
+      width: min(430px, 100%);
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) calc(92px + var(--safe-b));
+    }
+
+    header {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1.25;
+    }
+
+    h1 span {
+      display: block;
+      margin-top: 4px;
+      font-family: -apple-system, "PingFang SC", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--mute);
+      letter-spacing: 0.02em;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .tab {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mute);
+      font: 500 13px/1.1 "PingFang SC", sans-serif;
+      padding: 9px 4px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .tab[aria-pressed="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #f4f6f8;
+    }
+
+    .tally {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+      color: var(--mute);
+    }
+
+    .tally b { color: var(--ink); font-weight: 600; }
+
+    .bar {
+      height: 3px;
+      background: #d5dde6;
+      margin-top: 8px;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--ink);
+    }
+
+    .leaf {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--tri);
+      min-height: auto;
+      padding: 22px 18px 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .leaf.star { border-left-color: var(--star); }
+
+    .mark {
+      font-size: 13px;
+      color: var(--tri);
+      margin-bottom: 10px;
+    }
+
+    .leaf.star .mark { color: var(--star); }
+
+    .headword {
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-size: clamp(2rem, 9vw, 2.7rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+      line-height: 1.15;
+    }
+
+    .ipa {
+      margin-top: 8px;
+      color: var(--mute);
+      font-family: Georgia, serif;
+      font-size: 0.98rem;
+    }
+
+    .opts {
+      display: grid;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .opt {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font: 400 16px/1.45 "PingFang SC", sans-serif;
+      padding: 13px 14px;
+      min-height: 52px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .opt:active:not(:disabled) { background: #eef2f7; }
+
+    .opt:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    .opt .k {
+      display: inline-block;
+      width: 1.15em;
+      font-family: Georgia, serif;
+      color: var(--mute);
+      margin-right: 8px;
+    }
+
+    .opt.right {
+      border-color: var(--ok);
+      background: #e7f3ec;
+    }
+
+    .opt.wrong {
+      border-color: var(--star);
+      background: #f7e8ea;
+    }
+
+    .opt:disabled { cursor: default; }
+
+    .gloss {
+      display: none;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: #2a3344;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .gloss.on { display: block; }
+
+    .gloss strong {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .dock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px var(--gutter) calc(12px + var(--safe-b));
+      background: linear-gradient(to top, var(--paper) 70%, transparent);
+    }
+
+    .dock inner, .dock .row {
+      width: min(430px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 2.2fr;
+      gap: 8px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: 600 16px/1 "PingFang SC", sans-serif;
+      padding: 14px 12px;
+      border-radius: 2px;
+    }
+
+    .ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--mute);
+    }
+
+    .go {
+      background: var(--ink);
+      color: #f4f6f8;
+    }
+
+    .go:disabled { opacity: 0.35; }
+
+    .empty {
+      padding: 48px 8px;
+      color: var(--mute);
+      text-align: left;
+    }
+
+    @media (min-width: 720px) {
+      .page { width: min(460px, 100%); padding-top: 28px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>
+        交大水平考试词汇
+        <span>只练词表里的 ★ 较高要求 与 ▲ 更高要求。点选中文释义。</span>
+      </h1>
+      <div class="tabs" role="tablist">
+        <button class="tab" data-f="all" aria-pressed="true">全部</button>
+        <button class="tab" data-f="★" aria-pressed="false">★ 较高</button>
+        <button class="tab" data-f="▲" aria-pressed="false">▲ 更高</button>
+        <button class="tab" data-f="wrong" aria-pressed="false">错题</button>
+      </div>
+      <div>
+        <div class="tally">
+          <span id="meta">—</span>
+          <span id="score">—</span>
+        </div>
+        <div class="bar"><i id="bar"></i></div>
+      </div>
+    </header>
+
+    <article class="leaf" id="leaf">
+      <div id="card"></div>
+    </article>
+  </div>
+
+  <div class="dock">
+    <div class="row">
+      <button class="btn ghost" id="reshuffle" type="button">重洗</button>
+      <button class="btn go" id="next" type="button" disabled>下一词</button>
+    </div>
+  </div>
+
+  <script src="words.js"></script>
+  <script>
+    const STORE = "sjtu-vocab-v1";
+    const KEYS = "ABCD";
+    const bank = Array.isArray(window.VOCAB) ? window.VOCAB : [];
+
+    const $ = (id) => document.getElementById(id);
+    const leaf = $("leaf");
+    const card = $("card");
+    const nextBtn = $("next");
+    const meta = $("meta");
+    const scoreEl = $("score");
+    const bar = $("bar");
+
+    let filter = "all";
+    let deck = [];
+    let i = 0;
+    let answered = false;
+    let stats = { ok: 0, bad: 0 };
+    let wrong = {};
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE) || "{}");
+      stats = saved.stats || stats;
+      wrong = saved.wrong || {};
+    } catch (_) {}
+
+    function save() {
+      localStorage.setItem(STORE, JSON.stringify({ stats, wrong }));
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let n = a.length - 1; n > 0; n--) {
+        const j = Math.floor(Math.random() * (n + 1));
+        [a[n], a[j]] = [a[j], a[n]];
+      }
+      return a;
+    }
+
+    function filtered() {
+      if (filter === "wrong") return bank.filter((w) => wrong[w.w]);
+      if (filter === "★" || filter === "▲") return bank.filter((w) => w.m === filter);
+      return bank;
+    }
+
+    function rebuild(resetStats) {
+      deck = shuffle(filtered());
+      i = 0;
+      answered = false;
+      if (resetStats) stats = { ok: 0, bad: 0 };
+      save();
+      render();
+    }
+
+    function render() {
+      const total = deck.length;
+      const done = Math.min(i, total);
+      meta.textContent = total ? `${Math.min(i + 1, total)} / ${total}` : "没有词";
+      const n = stats.ok + stats.bad;
+      scoreEl.textContent = n ? `对 ${stats.ok} · 错 ${stats.bad}` : "点选项作答";
+      bar.style.width = total ? `${(done / total) * 100}%` : "0";
+
+      if (!total) {
+        leaf.className = "leaf";
+        card.innerHTML = `<div class="empty">${filter === "wrong" ? "错题本是空的。先在全部或分层里练一轮。" : "词表没有加载到。请用浏览器打开本页，不要只打开空白文件。"}</div>`;
+        nextBtn.disabled = true;
+        return;
+      }
+
+      if (i >= total) {
+        leaf.className = "leaf";
+        card.innerHTML = `<div class="empty">本组 ${total} 词已过完。正确 ${stats.ok}，错误 ${stats.bad}。点「重洗」再来一轮，或改到「错题」只补漏。</div>`;
+        nextBtn.disabled = true;
+        nextBtn.textContent = "已完成";
+        return;
+      }
+
+      const q = deck[i];
+      answered = false;
+      nextBtn.disabled = true;
+      nextBtn.textContent = "下一词";
+      leaf.className = "leaf" + (q.m === "★" ? " star" : "");
+      const mark = q.m === "★" ? "★ 较高要求" : "▲ 更高要求";
+      const ipa = q.p ? `<div class="ipa">/${q.p}/</div>` : "";
+      card.innerHTML = `
+        <div class="mark">${mark}</div>
+        <div class="headword">${q.w}</div>
+        ${ipa}
+        <div class="opts" id="opts"></div>
+        <div class="gloss" id="gloss"><strong>全部义项</strong>${escapeHtml(q.f)}</div>
+      `;
+      const box = $("opts");
+      q.o.forEach((text, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt";
+        b.innerHTML = `<span class="k">${KEYS[idx]}</span>${escapeHtml(text)}`;
+        b.addEventListener("click", () => grade(idx));
+        box.appendChild(b);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function grade(idx) {
+      if (answered) return;
+      answered = true;
+      const q = deck[i];
+      const buttons = [...document.querySelectorAll(".opt")];
+      buttons.forEach((b, n) => {
+        b.disabled = true;
+        if (n === q.a) b.classList.add("right");
+        if (n === idx && idx !== q.a) b.classList.add("wrong");
+      });
+      $("gloss").classList.add("on");
+      if (idx === q.a) {
+        stats.ok += 1;
+        delete wrong[q.w];
+      } else {
+        stats.bad += 1;
+        wrong[q.w] = 1;
+      }
+      save();
+      const n = stats.ok + stats.bad;
+      scoreEl.textContent = `对 ${stats.ok} · 错 ${stats.bad}`;
+      nextBtn.disabled = false;
+    }
+
+    function goNext() {
+      if (i < deck.length) i += 1;
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        filter = btn.dataset.f;
+        document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-pressed", t === btn ? "true" : "false"));
+        rebuild(true);
+      });
+    });
+
+    $("reshuffle").addEventListener("click", () => rebuild(true));
+    nextBtn.addEventListener("click", goNext);
+
+    document.addEventListener("keydown", (e) => {
+      if (!deck[i] || document.activeElement.tagName === "INPUT") return;
+      const k = e.key.toUpperCase();
+      if ("ABCD".includes(k) && !answered) {
+        grade("ABCD".indexOf(k));
+      } else if ((e.key === "Enter" || e.key === " ") && answered) {
+        e.preventDefault();
+        goNext();
+      }
+    });
+
+    let touchX = null;
+    document.addEventListener("touchstart", (e) => {
+      touchX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].screenX - touchX;
+      touchX = null;
+      if (dx < -60 && answered) goNext();
+    }, { passive: true });
+
+    rebuild(false);
+  </script>
+</body>
+</html>
